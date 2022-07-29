@@ -8,7 +8,7 @@ import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
 
-public class RenderTemplateException extends RuntimeException  {
+public class RenderTemplateException extends RuntimeException {
 	private static final long serialVersionUID = -7982702000551927171L;
 
 	public RenderTemplateException(String msg) {

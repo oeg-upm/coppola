@@ -66,8 +66,6 @@ public class ValidationDocument {
 		return Objects.equals(id, other.id) && Objects.equals(validationDocument, other.validationDocument);
 	}
 
-
-
 	@Override
 	public String toString() {
 		JsonObject obj = new JsonObject();
@@ -75,7 +73,5 @@ public class ValidationDocument {
 		obj.addProperty("shape", validationDocument);
 		return obj.toString();
 	}
-
-
 
 }

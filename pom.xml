@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>upm.oeg.nxgenweb</groupId>
 	<artifactId>coppola</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<name>Coppola</name>
 
 	<properties>
@@ -54,5 +54,54 @@
 		</dependency>
 
 	</dependencies>
+
+	
+
+<build>
+     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+        <execution>
+            <phase>package</phase>
+            <!--<phase /><!- - Switch off -->
+            <goals>
+                <goal>shade</goal>
+            </goals>
+        </execution>
+    </executions>
+        <configuration>
+        <shadedArtifactAttached>false</shadedArtifactAttached>
+        <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>coppola.App</mainClass>
+            </transformer>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                <addHeader>false</addHeader>
+            </transformer>
+        </transformers>
+        <filters>
+            <filter>
+                <artifact>coppola</artifact>
+                <excludes>
+                    <!-- Some jars are signed but shading breaks that.
+                         Don't include signing files.
+                    -->
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                </excludes>
+            </filter>
+        </filters>
+    </configuration>
+      </plugin>
+    </plugins>
+  </build>
+	
+
 
 </project>

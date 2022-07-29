@@ -8,7 +8,7 @@ import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
 
-public class RepositoryException extends RuntimeException  {
+public class RepositoryException extends RuntimeException {
 	private static final long serialVersionUID = -7982702000551927171L;
 
 	public RepositoryException(String msg) {

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Bare - Start Bootstrap Template</title>
+        <title>Coppola validator</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -17,12 +17,12 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand disabled" href="#">AURORAL Semantic Validator</a>
+                <a class="navbar-brand disabled" href="#">Coppola</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!--<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Link</a></li>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="https://github.com/oeg-upm/coppola">GitHub</a></li>
+                        <!--<li class="nav-item"><a class="nav-link" href="#">Link</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -31,16 +31,16 @@
                                 <li><hr class="dropdown-divider" /></li>
                                 <li><a class="dropdown-item" href="#">Something else here</a></li>
                             </ul>
-                        </li>
-                    </ul>-->
+                        </li>-->
+                    </ul>
                 </div>
             </div>
         </nav>
         <!-- Page content-->
         <div class="container">
             <div class="text-center mt-5">
-                <h1>Validation payloads</h1>
-                <p class="lead">SHACL shapes for validating data payloads</p>               
+                <h1>SHACL data validator</h1>
+                <p class="lead">SHACL shapes for validating data payloads in TURTLE or JSON-LD 1.1</p>               
                 
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal"> Add/Edit shape </button>
@@ -89,31 +89,47 @@
 
                 <!-- Playground modal -->
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#playgroundModal"> Add/Edit shape </button>
+                
 
                 <!-- Modal -->
                 <div class="modal fade" id="playgroundModal" tabindex="-1" aria-labelledby="playgroundModal" aria-hidden="true">
-                  <div class="modal-dialog modal-xl">
+                  <div class="modal-dialog modal-fullscreen">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Create or edit a SHACL shape</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Playground</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        <div class="form-group" style="text-align: left;">
-                            <label for="shapeName" style="text-align: left;">Name:</label>
-                            <input type="text" class="form-control" id="shapeName" aria-describedby="emailHelp" placeholder="Type a new SHACL shape name or an existing one for editing...">
-                            <label for="shapeInput" style="text-align: left;">Content:</label>
-                            <textarea class="form-control" id="shapeInput" rows="15" placeholder="Enter SHACL shape here..."></textarea>
+                       
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12"style="text-align: left;">
+                                    <div class="form-group" style="text-align: left;">
+                                        <label for="shapeName" style="text-align: left;">SHACL Shape:</label>
+                                        <input  type="text" class="form-control" id="choosenShape" aria-describedby="emailHelp" disabled>
+                                        <select style="margin-top:10px" class="form-select" id="formatChoosen">
+                                          <option>JSON-LD 1.1</option>
+                                          <option>TURTLE</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:30px">
+                                <div class="col-md-6">
+                                    <textarea class="form-control" id="samplePayload" rows="15" placeholder="Enter your data here..."></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                   <textarea class="form-control" id="shapeReport" rows="15" placeholder=""></textarea> 
+                                </div>
+                              </div>
                         </div>
-
                       </div>
                       <div class="modal-footer">
-                        <div style="color: red;font-weight: bold;"> 
-                            <p style="color: red;font-weight: bold;" id="modalForm"></p>
+                       <div style="color: red;font-weight: bold;"> 
+                            <p style="color: red;font-weight: bold;" id="playError"></p>
                         </div>
                         <button type="button" id="closeModal" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" id="saveShape" class="btn btn-primary">Save</button>
+                        <button type="button" id="playShape" class="btn btn-info">Play</button>
                       </div>
                     </div>
                   </div>
@@ -133,7 +149,8 @@
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.js"></script>
         <script>
             document.getElementById("saveShape").addEventListener("click", getAsyncOntology);
-            
+            document.getElementById("playShape").addEventListener("click", playShape);
+
             function removeShape(id){
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function() { 
@@ -145,6 +162,42 @@
                 xmlHttp.send(null);
                 
             }
+
+            function removeShape(id){
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() { 
+                    if (xmlHttp.readyState == 4 && xmlHttp.status >= 200 && xmlHttp.status < 300){
+                        listShapes();
+                    }
+                };
+                xmlHttp.open("DELETE", "/api/"+id, true); // true for asynchronous 
+                xmlHttp.send(null);
+                
+            }
+            function chooseShape(id){
+                document.getElementById("choosenShape").value = id;
+            }   
+
+            function playShape(){  
+                var shape =  document.getElementById("choosenShape").value;
+                var data =  document.getElementById("samplePayload").value;
+                var format = document.getElementById("formatChoosen").value;
+                var xmlHttp = new XMLHttpRequest();
+                document.getElementById("playError").innerHTML = "";
+                xmlHttp.onreadystatechange = function() { 
+                    if (xmlHttp.readyState == 4 && xmlHttp.status >= 200 && xmlHttp.status < 300){
+                        document.getElementById("shapeReport").value = xmlHttp.responseText;
+                    }else if(xmlHttp.readyState == 4){
+                        var p = xmlHttp.responseText;
+                        var text = p.replace(/^.*Exception:\s*/i, '').replace(/"}\s*$/i,'');
+                        document.getElementById("playError").innerHTML = text;
+                    }     
+                }    
+                console.log(format);
+                xmlHttp.open("POST", "/api/"+shape+"?format="+format, true); // true for asynchronous 
+                xmlHttp.send(data);
+            }
+
             function listShapes(){
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function() { 
@@ -155,7 +208,7 @@
                         document.getElementById("tableBody").innerHTML = "";
                         for (var i=0;i<parsedJSON.length;i++) {
                             var json = parsedJSON[i];
-                            var newRow = "<tr style=\"text-align: center;\"><td><a href=\""+json.url+"\">"+json.id+"</a></td><td><button onclick=\"removeShape('"+json.id+"')\" type=\"button\" class=\"btn btn-warning\"><i class=\"fa fa-solid fa-trash\"></i></button></td></tr>\n"; 
+                            var newRow = "<tr style=\"text-align: center;\"><td><a href=\""+json.url+"\">"+json.id+"</a></td><td><button onclick=\"removeShape('"+json.id+"')\" type=\"button\" class=\"btn btn-warning\"><i class=\"fa fa-solid fa-trash\"></i></button><button type=\"button\" class=\"btn btn-info\" data-bs-toggle=\"modal\" data-bs-target=\"#playgroundModal\" onclick=\"chooseShape('"+json.id+"')\" style=\"margin-left:5px\"> <i class=\"fa\">&#xf04b;</i> </button></td></tr>\n"; 
                             var html = document.getElementById("tableBody").innerHTML;
                             document.getElementById("tableBody").innerHTML = html+newRow;
                         }
@@ -180,14 +233,10 @@
                         document.getElementById("closeModal").click();
                     }else if(xmlHttp.readyState == 4){
                         var p = xmlHttp.responseText;
-                        var text = p.replace(/^.*Exception:\s*/i, '').replace(/"}\s*$/i,'');
-                        console.log(text);
-                        
+                        var text = p.replace(/^.*Exception:\s*/i, '').replace(/"}\s*$/i,'');     
                         document.getElementById("modalForm").innerHTML = text;
                     }     
                 }    
-                console.log(shapeName); 
-                console.log(shapeContent); 
                 xmlHttp.open("PUT", "/api/"+shapeName, true); // true for asynchronous 
                 xmlHttp.send(shapeContent);
             };
@@ -205,6 +254,11 @@
             });
         </script>
 
-       
+        <footer class="footer mt-auto py-3 bg-dark" style="width:100%; position: absolute;
+  bottom: 0;">
+          <div class="container">
+            <span class="text-light">This work is partially funded by the European Union’s Horizon 2020 Research and Innovation Programme through the AURORAL project, Grant Agreement No. 101016854.</span>
+          </div>
+        </footer>
     </body>
 </html>

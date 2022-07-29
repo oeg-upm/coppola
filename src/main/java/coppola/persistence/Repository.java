@@ -13,7 +13,6 @@ import org.hibernate.Transaction;
 
 import coppola.exceptions.RepositoryException;
 
-
 public class Repository<T> {
 
 	private Class<T> innerClass;
@@ -24,24 +23,24 @@ public class Repository<T> {
 
 	public Repository(Class<T> clazz) {
 		innerClass = clazz;
-		queryRetrieve = concat("FROM ",innerClass.getSimpleName(), " t WHERE t.id = :id");
-		queryList = concat("FROM ",innerClass.getSimpleName());
-		queryDelete = concat("DELETE ",innerClass.getSimpleName(), " t WHERE t.id = :id");
-		queryExists = concat("SELECT count(*) FROM ",innerClass.getSimpleName(), " t WHERE t.id = :id");
+		queryRetrieve = concat("FROM ", innerClass.getSimpleName(), " t WHERE t.id = :id");
+		queryList = concat("FROM ", innerClass.getSimpleName());
+		queryDelete = concat("DELETE ", innerClass.getSimpleName(), " t WHERE t.id = :id");
+		queryExists = concat("SELECT count(*) FROM ", innerClass.getSimpleName(), " t WHERE t.id = :id");
 	}
 
 	public void persist(T object) {
 		Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
-            transaction = session.beginTransaction();
-            session.persist(object);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw new RepositoryException(e.toString());
-        }
+		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
+			transaction = session.beginTransaction();
+			session.persist(object);
+			transaction.commit();
+		} catch (Exception e) {
+			if (transaction != null && transaction.isActive()) {
+				transaction.rollback();
+			}
+			throw new RepositoryException(e.toString());
+		}
 	}
 
 	public boolean exists(String id) {
@@ -52,28 +51,28 @@ public class Repository<T> {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			session.beginTransaction();
 			return session.createQuery(this.queryExists, Long.class).setParameter(columnName, id).uniqueResult() > 0;
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	throw new RepositoryException(e.toString());
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RepositoryException(e.toString());
+		}
 	}
 
 	public Optional<T> retrieve(String id) {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			session.beginTransaction();
 			return session.createQuery(this.queryRetrieve, innerClass).setParameter("id", id).uniqueResultOptional();
-        } catch (Exception e) {
-        	throw new RepositoryException(e.toString());
-        }
+		} catch (Exception e) {
+			throw new RepositoryException(e.toString());
+		}
 	}
 
 	public List<T> retrieve() {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			session.beginTransaction();
 			return session.createQuery(queryList, innerClass).list();
-        } catch (Exception e) {
-        	throw new RepositoryException(e.toString());
-        }
+		} catch (Exception e) {
+			throw new RepositoryException(e.toString());
+		}
 	}
 
 	public void delete(String id) {
@@ -82,7 +81,7 @@ public class Repository<T> {
 			session.createQuery(queryDelete).setParameter("id", id).executeUpdate();
 		} catch (Exception e) {
 			throw new RepositoryException(e.toString());
-        }
+		}
 	}
 
 	public void delete(int id) {
@@ -91,10 +90,10 @@ public class Repository<T> {
 			session.createQuery(queryDelete).setParameter("id", id).executeUpdate();
 		} catch (Exception e) {
 			throw new RepositoryException(e.toString());
-        }
+		}
 	}
 
-	private String concat(String ...strings ) {
+	private String concat(String... strings) {
 		StringBuilder br = new StringBuilder();
 		for (String string : strings)
 			br.append(string);
@@ -105,13 +104,13 @@ public class Repository<T> {
 		try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
 			session.beginTransaction();
 			Query query = session.createQuery(queryStr);
-			Set<Entry<String,String>> entries =  parameters.entrySet();
-			for(Entry<String,String> entry : entries)
+			Set<Entry<String, String>> entries = parameters.entrySet();
+			for (Entry<String, String> entry : entries)
 				query = query.setParameter(entry.getKey(), entry.getValue());
 			query.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RepositoryException(e.toString());
-        }
+		}
 	}
 }

@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
 import org.apache.jena.shacl.ShaclValidator;
 import org.apache.jena.shacl.Shapes;
 import org.apache.jena.shacl.ValidationReport;
@@ -31,13 +33,13 @@ public class Controller {
 		response.type("application/json");
 		JsonArray array = new JsonArray();
 		repository.retrieve().parallelStream().map(doc -> toIdJson(doc.getId())).forEach(elem -> array.add(elem));
-		return array ;
+		return array;
 	};
 
 	private static JsonObject toIdJson(String id) {
 		JsonObject object = new JsonObject();
 		object.addProperty("id", id);
-		object.addProperty("url", "/api/"+id);
+		object.addProperty("url", "/api/" + id);
 		return object;
 	}
 
@@ -69,13 +71,13 @@ public class Controller {
 			toGraph(doc.getValidationDocument());
 			repository.persist(doc);
 			return doc;
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new InvalidRequestException(e.toString());
 		}
 	};
 
 	private static Graph toGraph(String rdf) {
-		Model model  = ModelFactory.createDefaultModel();
+		Model model = ModelFactory.createDefaultModel();
 		model.read(new ByteArrayInputStream(rdf.getBytes()), null, "TURTLE");
 		return model.getGraph();
 	}
@@ -83,14 +85,22 @@ public class Controller {
 	public static final Route apply = (Request request, Response response) -> {
 		String id = fetchId(request);
 		String body = request.body();
+		String format = request.queryParams("format").toLowerCase();
+		if (format == null || format.isEmpty() || (!format.equals("turtle") && !format.equals("json-ld 1.1"))) {
+			throw new InvalidRequestException("Provide a valid format argument: json-ld or turtle");
+		}
 		// Retrieve
 		Optional<ValidationDocument> documentOpt = repository.retrieve(id);
 		if (documentOpt.isPresent()) {
-			String shacl = documentOpt.get().getValidationDocument();
-			Graph shapesGraph = toGraph(shacl);
-			Graph dataGraph = toGraph(body);
+			Graph dataGraph = null;
+			if (format.equals("json-ld 1.1")) {
+				dataGraph = translateToTTL(body).getGraph();
+			} else {
+				dataGraph = toGraph(body);
+			}
 
-			Shapes shapes = Shapes.parse(shapesGraph);
+			String shacl = documentOpt.get().getValidationDocument();
+			Shapes shapes = Shapes.parse(toGraph(shacl));
 			ValidationReport report = ShaclValidator.get().validate(shapes, dataGraph);
 			Writer writer = new StringWriter();
 			report.getModel().write(writer, "TTL", null);
@@ -100,6 +110,16 @@ public class Controller {
 		}
 
 	};
+
+	private static Model translateToTTL(String body) {
+		try {
+			return RDFParser.source(new ByteArrayInputStream(body.getBytes())).forceLang(Lang.JSONLD11).build()
+					.toModel();
+
+		} catch (Exception e) {
+			throw new InvalidRequestException(e.toString());
+		}
+	}
 
 	public static final Route remove = (Request request, Response response) -> {
 		String id = fetchId(request);
