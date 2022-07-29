@@ -3,7 +3,7 @@
 Coppola is a micro service directory for SHACL shapes. It provides a graphical interface for users which scope is help them managing shapes (creating, updating, deleting, or reading) and, also, apply these shapes by means of a Playground to sample payloads. In addition, Coppola publishes a REST API so third-party services can directly use its functionalities.
 
 
-# Quickstart
+## Quickstart
 
 Using docker run docker-compose with the following recipe
 
@@ -25,12 +25,10 @@ volumes:
     name: validation-db
 ```
 
-Using [java download the latest released version](https://github.com/oeg-upm/coppola/releases) and run it with `java -jar`
+Using [java download the latest released version](https://github.com/oeg-upm/coppola/releases) and run it with `java -jar`.
 
 
-# REST API
-
-# API
+## REST API
 | Endpoint | Method | Description |
 |--|--|--|
 | `/api`  |  `GET` | Returns the list of SHACL shapes stored in Coppola |
