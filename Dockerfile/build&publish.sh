@@ -6,7 +6,7 @@ USAGE="$(basename "$0") [ -h ] [ -e env ]
       -e  environment [ dev (default), prod, ... ]"
 
 # Default configuration
-ENV=latest
+ENV=0.1.0
 REGISTRY=acimmino
 IMAGE_NAME=coppola
 PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7
