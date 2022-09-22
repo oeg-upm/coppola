@@ -37,10 +37,3 @@ Using [java download the latest released version](https://github.com/oeg-upm/cop
 | `/api/:id`  |  `DELETE` | Deletes the SHACL shape stored in Coppola with the provided `:id`   |
 | `/api/:id`  |  `POST` | Validates a sample payload provided in the `body`of the request using the SHACL shape related to the provided `:id`. The request must specify the format of the sample payload using the argument format, in case is a JSON-LD 1.1 payload (`?format=json-ld 1.1`) or Turtle (`?format=turtle`) |
 
-
----
-### Acknowledgements
-This project has been partially funded by the European project AURORAL from the European Union's Horizont 2020 research and innovation programme under grant agreement Nº101016854.
-
-<img src="https://user-images.githubusercontent.com/4105186/141472288-1b15e0ba-8ae1-414a-a849-222b6bc27754.png" height="75" /> <img src="https://www.auroral.eu/img/logos/bandeira.png"  height="80" />
-
